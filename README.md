@@ -94,6 +94,17 @@ serializer when you render the object:
 render json: @post, serializer: FancyPostSerializer
 ```
 
+### Use serialization outside of ActionController::Base
+
+When controller does not inherit from ActionController::Base,
+include Serialization module manually:
+
+```ruby
+class ApplicationController < ActionController::API
+  include ActionController::Serialization
+end
+```
+
 ## Arrays
 
 In your controllers, when you use `render :json` for an array of objects, AMS will
@@ -354,7 +365,7 @@ The above usage of `:meta` will produce the following:
 If you would like to change the meta key name you can use the `:meta_key` option:
 
 ```ruby
-render json: @posts, serializer: CustomArraySerializer, meta: {total: 10}, meta_key: 'meta_object'
+render json: @posts, serializer: CustomArraySerializer, meta_object: {total: 10}, meta_key: 'meta_object'
 ```
 
 The above usage of `:meta_key` will produce the following:
@@ -513,15 +524,15 @@ Now, any associations will be supplied as an Array of IDs:
 }
 ```
 
-You may also choose to embed the IDs by the association's name underneath an
-`embed_key` for the resource. For example, say we want to change `comment_ids`
+You may also choose to embed the IDs by the association's name underneath a
+`key` for the resource. For example, say we want to change `comment_ids`
 to `comments` underneath a `links` key:
 
 ```ruby
 class PostSerializer < ActiveModel::Serializer
   attributes :id, :title, :body
 
-  has_many :comments, embed: :ids, embed_namespace: :links
+  has_many :comments, embed: :ids, key: :comments, embed_namespace: :links
 end
 ```
 
@@ -683,7 +694,7 @@ class PostSerializer < ActiveModel::Serializer
   embed :ids, include: true
 
   attributes :id, :title, :body
-  has_many :comments, embed_key: :external_id
+  has_many :comments, key: :external_id
 end
 ```
 

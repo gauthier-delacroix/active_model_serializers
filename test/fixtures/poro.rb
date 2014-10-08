@@ -1,11 +1,13 @@
 class Model
-  def initialize(hash={})
+  def initialize(hash = {})
     @attributes = hash
   end
 
   def read_attribute_for_serialization(name)
     if name == :id || name == 'id'
       object_id
+    elsif respond_to?(name)
+      send name
     else
       @attributes[name]
     end
@@ -102,6 +104,10 @@ class RootProfileSerializer < ActiveModel::Serializer
   end
 
   attributes :name, :description
+end
+
+class DifferentProfileSerializer < ActiveModel::Serializer
+  attributes :name
 end
 
 class CategorySerializer < ActiveModel::Serializer
